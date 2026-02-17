@@ -22,6 +22,12 @@
         body { font-family: 'Lato', sans-serif; }
         h1, h2, h3, .font-serif { font-family: 'Playfair Display', serif; }
         
+        /* Colores Personalizados */
+        .text-olive { color: #606c38; }
+        .bg-olive { background-color: #606c38; }
+        .border-olive { border-color: #606c38; }
+        .hover-text-olive:hover { color: #606c38; }
+        
         .animate-fade-in-up { animation: fadeInUp 1s ease-out; }
         .animate-fade-in { animation: fadeIn 0.5s ease-out; }
         
@@ -54,6 +60,7 @@
         const IconAlertCircle = ({ size }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>;
         const IconLoader2 = ({ size, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>;
         const IconUserCheck = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>;
+        const IconCamera = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>;
 
 
         // --- COMPONENTE APP ---
@@ -112,15 +119,69 @@
                 });
 
                 return (
-                    <div className="flex justify-center gap-4 md:gap-8 py-8 text-stone-600">
+                    <div className="flex justify-center gap-4 md:gap-8 py-8 text-gray-600">
                         {Object.keys(timeLeft).map((interval) => (
                             <div key={interval} className="flex flex-col items-center">
-                                <span className="text-3xl md:text-5xl font-serif font-bold text-stone-800">
+                                <span className="text-3xl md:text-5xl font-serif font-bold text-black">
                                     {timeLeft[interval] || '0'}
                                 </span>
                                 <span className="text-xs md:text-sm uppercase tracking-widest mt-2">{interval}</span>
                             </div>
                         ))}
+                    </div>
+                );
+            };
+
+            // --- SUB-COMPONENTE: CALENDARIO ---
+            const CalendarView = () => {
+                const daysOfWeek = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
+                // Enero 2027 empieza en Viernes (5) y tiene 31 días (0=Dom, 1=Lun... 5=Vie)
+                const startDay = 5; 
+                const totalDays = 31;
+                const weddingDay = 23;
+
+                const days = [];
+                // Relleno inicial para los días antes del 1ro
+                for (let i = 0; i < startDay; i++) {
+                    days.push(null);
+                }
+                // Días del mes
+                for (let i = 1; i <= totalDays; i++) {
+                    days.push(i);
+                }
+
+                return (
+                    <div className="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-gray-100 max-w-sm mx-auto mt-12 relative overflow-hidden">
+                        {/* Decoración de fondo */}
+                        <div className="absolute -top-10 -right-10 w-24 h-24 bg-olive/10 rounded-full blur-2xl"></div>
+                        
+                        <div className="text-center mb-6 border-b border-gray-100 pb-4">
+                            <h3 className="text-2xl font-serif text-gray-900 uppercase tracking-widest">Enero 2027</h3>
+                            <p className="text-olive text-sm font-bold tracking-widest mt-2 uppercase animate-pulse">¡El Gran Día!</p>
+                        </div>
+                        
+                        <div className="grid grid-cols-7 gap-2 text-center text-xs md:text-sm mb-4">
+                            {daysOfWeek.map(d => (
+                                <div key={d} className="font-bold text-olive">{d}</div>
+                            ))}
+                        </div>
+                        
+                        <div className="grid grid-cols-7 gap-2 text-center">
+                            {days.map((day, index) => {
+                                if (!day) return <div key={index}></div>;
+                                const isWeddingDay = day === weddingDay;
+                                return (
+                                    <div key={index} className="flex flex-col items-center justify-center h-10 w-10 mx-auto relative group">
+                                        <div className={`
+                                            flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300 text-sm
+                                            ${isWeddingDay ? 'bg-olive text-white font-bold scale-110 shadow-lg ring-2 ring-olive/30' : 'text-gray-600 hover:bg-gray-100'}
+                                        `}>
+                                            {day}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
                 );
             };
@@ -173,10 +234,10 @@
                 if (status === 'success') {
                     return (
                         <div className="bg-green-50 p-8 rounded-lg text-center border border-green-200 animate-fade-in">
-                            <IconCheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-                            <h3 className="text-2xl font-serif text-green-800 mb-2">¡Gracias por confirmar!</h3>
-                            <p className="text-green-700">Hemos recibido tus datos correctamente.</p>
-                            <button onClick={() => setStatus('idle')} className="mt-6 text-sm text-green-600 underline hover:text-green-800">
+                            <IconCheckCircle className="w-16 h-16 text-olive mx-auto mb-4" />
+                            <h3 className="text-2xl font-serif text-gray-900 mb-2">¡Gracias por confirmar!</h3>
+                            <p className="text-gray-700">Hemos recibido tus datos correctamente.</p>
+                            <button onClick={() => setStatus('idle')} className="mt-6 text-sm text-olive underline hover:text-black">
                                 Enviar otra confirmación
                             </button>
                         </div>
@@ -184,17 +245,17 @@
                 }
 
                 return (
-                    <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-xl max-w-lg mx-auto border-t-4 border-stone-400">
-                        <h3 className="text-2xl font-serif text-center mb-6 text-stone-800">Confirmar Asistencia</h3>
+                    <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-xl max-w-lg mx-auto border-t-4 border-olive">
+                        <h3 className="text-2xl font-serif text-center mb-6 text-gray-900">Confirmar Asistencia</h3>
                         
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-stone-600 mb-1">Nombre Completo</label>
-                                <input required name="nombre" value={formData.nombre} onChange={handleChange} type="text" className="w-full px-4 py-2 border border-stone-300 rounded focus:ring-2 focus:ring-stone-400 focus:outline-none transition-colors" placeholder="Ej. Juan Pérez" />
+                                <label className="block text-sm font-medium text-gray-600 mb-1">Nombre Completo</label>
+                                <input required name="nombre" value={formData.nombre} onChange={handleChange} type="text" className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-black focus:border-black focus:outline-none transition-colors" placeholder="Ej. Juan Pérez" />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-stone-600 mb-1">Número de Asistentes</label>
-                                <select name="asistentes" value={formData.asistentes} onChange={handleChange} className="w-full px-4 py-2 border border-stone-300 rounded focus:ring-2 focus:ring-stone-400 focus:outline-none bg-white">
+                                <label className="block text-sm font-medium text-gray-600 mb-1">Número de Asistentes</label>
+                                <select name="asistentes" value={formData.asistentes} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-black focus:border-black focus:outline-none bg-white">
                                     <option>1 Persona</option>
                                     <option>2 Personas</option>
                                     <option>Familia (3)</option>
@@ -203,8 +264,8 @@
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-stone-600 mb-1">Restricciones / Canción sugerida</label>
-                                <textarea name="mensaje" value={formData.mensaje} onChange={handleChange} className="w-full px-4 py-2 border border-stone-300 rounded focus:ring-2 focus:ring-stone-400 focus:outline-none h-24" placeholder="¿Eres alérgico a algo? ¿Qué canción no puede faltar?"></textarea>
+                                <label className="block text-sm font-medium text-gray-600 mb-1">Restricciones / Canción sugerida</label>
+                                <textarea name="mensaje" value={formData.mensaje} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-black focus:border-black focus:outline-none h-24" placeholder="¿Eres alérgico a algo? ¿Qué canción no puede faltar?"></textarea>
                             </div>
 
                             {status === 'error' && (
@@ -213,7 +274,7 @@
                                 </div>
                             )}
 
-                            <button type="submit" disabled={status === 'sending'} className="w-full bg-stone-800 text-white py-3 rounded hover:bg-stone-700 transition-colors flex items-center justify-center gap-2 mt-4 font-medium tracking-wide disabled:opacity-70 disabled:cursor-not-allowed">
+                            <button type="submit" disabled={status === 'sending'} className="w-full bg-black text-white py-3 rounded hover:bg-olive transition-colors flex items-center justify-center gap-2 mt-4 font-medium tracking-wide disabled:opacity-70 disabled:cursor-not-allowed">
                                 {status === 'sending' ? (
                                     <><IconLoader2 size={18} className="animate-spin" /> ENVIANDO...</>
                                 ) : (
@@ -226,21 +287,21 @@
             };
 
             return (
-                <div className="font-sans text-stone-800 bg-stone-50 min-h-screen selection:bg-stone-200">
+                <div className="font-sans text-gray-900 bg-white min-h-screen selection:bg-gray-200">
                     {/* Navegación */}
-                    <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-stone-200 shadow-sm">
+                    <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-gray-200 shadow-sm">
                         <div className="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
                             <div className="text-xl font-serif font-bold tracking-tighter cursor-pointer" onClick={() => scrollToSection('home')}>
-                                Y<span className="text-stone-400">&</span>D
+                                Y<span className="text-olive">&</span>D
                             </div>
-                            <div className="hidden md:flex gap-8 text-sm font-medium tracking-widest text-stone-500">
-                                {['Historia', 'Detalles', 'Itinerario', 'RSVP'].map((item) => (
-                                    <button key={item} onClick={() => scrollToSection(item.toLowerCase())} className="hover:text-stone-900 transition-colors uppercase">
+                            <div className="hidden md:flex gap-8 text-sm font-medium tracking-widest text-gray-500">
+                                {['Historia', 'Fotos', 'Detalles', 'Itinerario', 'RSVP'].map((item) => (
+                                    <button key={item} onClick={() => scrollToSection(item.toLowerCase())} className="hover:text-black hover:text-olive transition-colors uppercase">
                                         {item}
                                     </button>
                                 ))}
                             </div>
-                            <button onClick={() => scrollToSection('rsvp')} className="md:hidden bg-stone-800 text-white px-4 py-2 rounded text-xs tracking-widest uppercase">
+                            <button onClick={() => scrollToSection('rsvp')} className="md:hidden bg-black text-white px-4 py-2 rounded text-xs tracking-widest uppercase">
                                 RSVP
                             </button>
                         </div>
@@ -249,15 +310,15 @@
                     {/* Hero Section */}
                     <section id="home" className="relative h-screen flex items-center justify-center text-center px-4 overflow-hidden">
                         <div className="absolute inset-0 z-0">
-                            <img src="https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" alt="Boda Fondo" className="w-full h-full object-cover"/>
-                            <div className="absolute inset-0 bg-stone-900/40"></div>
+                            <img src="https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" alt="Boda Fondo" className="w-full h-full object-cover grayscale"/>
+                            <div className="absolute inset-0 bg-black/40"></div>
                         </div>
                         <div className="relative z-10 text-white space-y-6 max-w-4xl mx-auto animate-fade-in-up">
                             <p className="tracking-[0.3em] text-sm md:text-base uppercase font-medium">¡Nos Casamos!</p>
                             <h1 className="text-6xl md:text-8xl font-serif font-medium leading-tight">{weddingData.couple}</h1>
                             <div className="flex items-center justify-center gap-4 text-lg md:text-2xl font-light italic opacity-90">
                                 <span>{weddingData.date}</span>
-                                <span className="w-2 h-2 bg-white rounded-full"></span>
+                                <span className="w-2 h-2 bg-olive rounded-full"></span>
                                 <span>{weddingData.location}</span>
                             </div>
                         </div>
@@ -269,42 +330,98 @@
                     {/* Historia */}
                     <section id="historia" className="py-24 px-4 bg-white">
                         <div className="max-w-3xl mx-auto text-center space-y-8">
-                            <IconHeart className="w-8 h-8 mx-auto text-stone-400" />
-                            <h2 className="text-3xl md:text-4xl font-serif text-stone-800">Nuestra Historia</h2>
-                            <p className="text-lg text-stone-600 leading-relaxed italic">"{weddingData.story}"</p>
+                            <IconHeart className="w-8 h-8 mx-auto text-olive" />
+                            <h2 className="text-3xl md:text-4xl font-serif text-black">Nuestra Historia</h2>
+                            <p className="text-lg text-gray-600 leading-relaxed italic">"{weddingData.story}"</p>
                             <div className="pt-8">
-                                <h3 className="text-sm font-bold tracking-widest text-stone-400 uppercase mb-6">Faltan para el gran día</h3>
+                                <h3 className="text-sm font-bold tracking-widest text-olive uppercase mb-6">Faltan para el gran día</h3>
                                 <Countdown />
+                            </div>
+                        </div>
+                    </section>
+                    
+                    {/* Galería de Fotos */}
+                    <section id="fotos" className="py-24 px-4 bg-gray-50">
+                        <div className="max-w-6xl mx-auto">
+                            <div className="text-center mb-12">
+                                <IconCamera className="w-10 h-10 mx-auto text-olive mb-4" />
+                                <h2 className="text-3xl md:text-4xl font-serif text-black">Nuestros Momentos</h2>
+                                <p className="text-gray-500 mt-2 font-light italic">Pequeños instantes de nuestra gran historia</p>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <div className="group overflow-hidden rounded-lg shadow-sm">
+                                    <img src="https://images.unsplash.com/photo-1511285560982-1351cdeb9821?auto=format&fit=crop&w=800&q=80" alt="Pareja 1" className="w-full h-80 object-cover transform group-hover:scale-105 transition-transform duration-500 grayscale group-hover:grayscale-0" />
+                                </div>
+                                <div className="group overflow-hidden rounded-lg shadow-sm">
+                                    <img src="https://images.unsplash.com/photo-1621621667797-e06afc217fb0?auto=format&fit=crop&w=800&q=80" alt="Anillos" className="w-full h-80 object-cover transform group-hover:scale-105 transition-transform duration-500 grayscale group-hover:grayscale-0" />
+                                </div>
+                                <div className="group overflow-hidden rounded-lg shadow-sm">
+                                    <img src="https://images.unsplash.com/photo-1519225448526-72c6613c91ad?auto=format&fit=crop&w=800&q=80" alt="Caminando" className="w-full h-80 object-cover transform group-hover:scale-105 transition-transform duration-500 grayscale group-hover:grayscale-0" />
+                                </div>
+                                <div className="group overflow-hidden rounded-lg shadow-sm">
+                                    <img src="https://images.unsplash.com/photo-1522673607200-1645062cd958?auto=format&fit=crop&w=800&q=80" alt="Abrazo" className="w-full h-80 object-cover transform group-hover:scale-105 transition-transform duration-500 grayscale group-hover:grayscale-0" />
+                                </div>
+                                <div className="group overflow-hidden rounded-lg shadow-sm">
+                                    <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=800&q=80" alt="Risas" className="w-full h-80 object-cover transform group-hover:scale-105 transition-transform duration-500 grayscale group-hover:grayscale-0" />
+                                </div>
+                                <div className="group overflow-hidden rounded-lg shadow-sm">
+                                    <img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=800&q=80" alt="Paisaje" className="w-full h-80 object-cover transform group-hover:scale-105 transition-transform duration-500 grayscale group-hover:grayscale-0" />
+                                </div>
                             </div>
                         </div>
                     </section>
 
                     {/* Detalles */}
-                    <section id="detalles" className="py-24 px-4 bg-stone-100">
+                    <section id="detalles" className="py-24 px-4 bg-white">
                         <div className="max-w-5xl mx-auto">
                             <h2 className="text-3xl md:text-4xl font-serif text-center mb-16">Detalles del Evento</h2>
-                            <div className="grid md:grid-cols-3 gap-8 text-center">
-                                <div className="bg-white p-8 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                                    <IconCalendar className="w-10 h-10 mx-auto text-stone-400 mb-4" />
+                            <div className="grid md:grid-cols-3 gap-8 text-center mb-16">
+                                <div className="bg-white p-8 rounded-lg shadow-sm hover:shadow-md transition-shadow border-t-2 border-transparent hover:border-olive">
+                                    <IconCalendar className="w-10 h-10 mx-auto text-olive mb-4" />
                                     <h3 className="text-xl font-serif mb-2">Cuándo</h3>
-                                    <p className="text-stone-600">Sábado, 23 de Enero 2027</p>
-                                    <p className="text-stone-500 text-sm mt-2">4:00 PM</p>
+                                    <p className="text-gray-600">Sábado, 23 de Enero 2027</p>
+                                    <p className="text-gray-500 text-sm mt-2">4:00 PM</p>
                                 </div>
-                                <div className="bg-white p-8 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                                    <IconMapPin className="w-10 h-10 mx-auto text-stone-400 mb-4" />
+                                <div className="bg-white p-8 rounded-lg shadow-sm hover:shadow-md transition-shadow border-t-2 border-transparent hover:border-olive">
+                                    <IconMapPin className="w-10 h-10 mx-auto text-olive mb-4" />
                                     <h3 className="text-xl font-serif mb-2">Dónde</h3>
-                                    <p className="text-stone-600 font-medium">{weddingData.location}</p>
-                                    <p className="text-stone-500 text-sm mt-2">{weddingData.address}</p>
-                                    <a href={weddingData.googleMapsLink} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs uppercase font-bold text-stone-400 hover:text-stone-700 mt-4 border-b border-stone-300 pb-1">
+                                    <p className="text-gray-600 font-medium">{weddingData.location}</p>
+                                    <p className="text-gray-500 text-sm mt-2">{weddingData.address}</p>
+                                    <a href={weddingData.googleMapsLink} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs uppercase font-bold text-olive hover:text-black mt-4 border-b border-olive pb-1">
                                         Ver Mapa <IconNavigation className="w-3 h-3" />
                                     </a>
                                 </div>
-                                <div className="bg-white p-8 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                                    <IconUserCheck className="w-10 h-10 mx-auto text-stone-400 mb-4" />
+                                <div className="bg-white p-8 rounded-lg shadow-sm hover:shadow-md transition-shadow border-t-2 border-transparent hover:border-olive">
+                                    <IconUserCheck className="w-10 h-10 mx-auto text-olive mb-4" />
                                     <h3 className="text-xl font-serif mb-2">Código de Vestimenta</h3>
-                                    <p className="text-stone-600">{weddingData.dressCode}</p>
-                                    <p className="text-stone-500 text-sm mt-2">Elegante pero cómodos</p>
+                                    <p className="text-gray-600">{weddingData.dressCode}</p>
+                                    <p className="text-gray-500 text-sm mt-2">Elegante pero cómodos</p>
                                 </div>
+                            </div>
+
+                            {/* INSERTAR CALENDARIO AQUÍ */}
+                            <CalendarView />
+
+                            {/* NUEVA SECCIÓN: PALETA DE COLORES (Con margen superior agregado para separar del calendario) */}
+                            <div className="bg-white rounded-xl p-8 md:p-12 shadow-sm text-center max-w-3xl mx-auto border border-gray-100 mt-16">
+                                <h3 className="text-xl font-serif mb-8 text-gray-900">Paleta de Colores Sugerida</h3>
+                                <div className="flex justify-center items-start gap-8 md:gap-16">
+                                    <div className="group flex flex-col items-center">
+                                        <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-black shadow-md border-2 border-gray-200 mb-3 transform group-hover:scale-105 transition-transform"></div>
+                                        <span className="text-xs uppercase tracking-widest text-gray-500 font-bold">Negro</span>
+                                    </div>
+                                    <div className="group flex flex-col items-center">
+                                        <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white shadow-md border-2 border-gray-200 mb-3 transform group-hover:scale-105 transition-transform"></div>
+                                        <span className="text-xs uppercase tracking-widest text-gray-500 font-bold">Blanco</span>
+                                    </div>
+                                    <div className="group flex flex-col items-center">
+                                        <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-olive shadow-md border-2 border-gray-200 mb-3 transform group-hover:scale-105 transition-transform"></div>
+                                        <span className="text-xs uppercase tracking-widest text-gray-500 font-bold">Verde Olivo</span>
+                                    </div>
+                                </div>
+                                <p className="mt-8 text-gray-500 font-light text-sm italic">
+                                    Agradecemos que tomen en cuenta estos tonos para las fotografías del evento.
+                                </p>
                             </div>
                         </div>
                     </section>
@@ -313,15 +430,15 @@
                     <section id="itinerario" className="py-24 px-4 bg-white overflow-hidden">
                         <div className="max-w-2xl mx-auto text-center">
                             <h2 className="text-3xl md:text-4xl font-serif mb-12">Itinerario</h2>
-                            <div className="relative border-l-2 border-stone-200 ml-1/2 md:ml-0 md:mx-auto pl-8 md:pl-0 space-y-12 text-left md:text-center">
+                            <div className="relative border-l-2 border-gray-200 ml-1/2 md:ml-0 md:mx-auto pl-8 md:pl-0 space-y-12 text-left md:text-center">
                                 {weddingData.schedule.map((item, index) => (
                                     <div key={index} className="relative md:flex md:items-center md:justify-center group">
-                                        <div className="absolute -left-[39px] md:left-1/2 md:-ml-[9px] w-5 h-5 bg-stone-100 border-4 border-stone-300 rounded-full z-10 group-hover:bg-stone-400 transition-colors"></div>
+                                        <div className="absolute -left-[39px] md:left-1/2 md:-ml-[9px] w-5 h-5 bg-white border-4 border-gray-300 rounded-full z-10 group-hover:border-olive transition-colors"></div>
                                         <div className="md:w-1/2 md:text-right md:pr-12">
-                                            <span className="text-2xl font-serif text-stone-800 block">{item.time}</span>
+                                            <span className="text-2xl font-serif text-gray-900 block">{item.time}</span>
                                         </div>
                                         <div className="md:w-1/2 md:text-left md:pl-12">
-                                            <span className="text-stone-500 uppercase tracking-widest text-sm font-medium">{item.event}</span>
+                                            <span className="text-gray-500 uppercase tracking-widest text-sm font-medium">{item.event}</span>
                                         </div>
                                     </div>
                                 ))}
@@ -330,19 +447,19 @@
                     </section>
 
                     {/* Mesa de Regalos */}
-                    <section className="py-16 px-4 bg-stone-900 text-stone-300 text-center">
+                    <section className="py-16 px-4 bg-olive text-white text-center">
                         <div className="max-w-2xl mx-auto">
-                            <IconGift className="w-12 h-12 mx-auto text-stone-500 mb-6" />
+                            <IconGift className="w-12 h-12 mx-auto text-white/80 mb-6" />
                             <h2 className="text-2xl font-serif text-white mb-4">Mesa de Regalos</h2>
-                            <p className="mb-8 font-light">
+                            <p className="mb-8 font-light text-white/90">
                                 Su presencia es nuestro mejor regalo. Si desean tener un detalle con nosotros, 
                                 hemos preparado una opción de lluvia de sobres o pueden visitar nuestra mesa de regalos.
                             </p>
                             <div className="flex flex-col md:flex-row justify-center gap-4">
-                                <button className="px-8 py-3 border border-stone-600 hover:bg-stone-800 hover:border-stone-500 rounded transition-all uppercase text-sm tracking-widest">
+                                <button className="px-8 py-3 border border-white hover:bg-white hover:text-olive rounded transition-all uppercase text-sm tracking-widest font-bold">
                                     Ver Liverpool
                                 </button>
-                                <button className="px-8 py-3 border border-stone-600 hover:bg-stone-800 hover:border-stone-500 rounded transition-all uppercase text-sm tracking-widest">
+                                <button className="px-8 py-3 border border-white hover:bg-white hover:text-olive rounded transition-all uppercase text-sm tracking-widest font-bold">
                                     Ver Amazon
                                 </button>
                             </div>
@@ -350,22 +467,22 @@
                     </section>
 
                     {/* RSVP */}
-                    <section id="rsvp" className="py-24 px-4 bg-stone-100 relative">
+                    <section id="rsvp" className="py-24 px-4 bg-gray-100 relative">
                         <div className="absolute inset-0 opacity-5 pointer-events-none" style={{backgroundImage: 'url("https://www.transparenttextures.com/patterns/cubes.png")'}}></div>
                         <div className="max-w-xl mx-auto relative z-10">
                             <div className="text-center mb-12">
-                                <h2 className="text-4xl font-serif text-stone-800 mb-4">Acompáñanos</h2>
-                                <p className="text-stone-600">Por favor confirma tu asistencia antes del 1 de Septiembre</p>
+                                <h2 className="text-4xl font-serif text-gray-900 mb-4">Acompáñanos</h2>
+                                <p className="text-gray-600">Por favor confirma tu asistencia antes del 1 de Septiembre</p>
                             </div>
                             <RsvpForm />
                         </div>
                     </section>
 
                     {/* Footer */}
-                    <footer className="bg-white py-12 text-center border-t border-stone-100">
-                        <h2 className="text-3xl font-serif text-stone-800 mb-4">{weddingData.couple}</h2>
-                        <p className="text-stone-500 text-sm uppercase tracking-widest mb-4">#BodaSofiyMateo2027</p>
-                        <p className="text-stone-400 text-xs">© 2027. Hecho con amor.</p>
+                    <footer className="bg-black text-white py-12 text-center">
+                        <h2 className="text-3xl font-serif mb-4">{weddingData.couple}</h2>
+                        <p className="text-gray-400 text-sm uppercase tracking-widest mb-4">#BodaYazminyDavid2027</p>
+                        <p className="text-gray-600 text-xs">© 2027. Hecho con amor.</p>
                     </footer>
                 </div>
             );
